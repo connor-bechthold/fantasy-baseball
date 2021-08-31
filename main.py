@@ -46,3 +46,5 @@ def season_scraper(season_url):
         team_one = teams[0].text
         team_two = teams[1].text
 
+        print("haha")
+
