@@ -45,6 +45,3 @@ def season_scraper(season_url):
         teams = summary.find_all("a", {"itemprop": "name"})
         team_one = teams[0].text
         team_two = teams[1].text
-
-        print("haha")
-
