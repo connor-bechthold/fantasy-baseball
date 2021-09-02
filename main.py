@@ -1,8 +1,10 @@
 from bs4 import BeautifulSoup
 from bs4 import Comment
+import numpy as np
 import pandas as pd
 import requests
 from constants import teams_abbr
+from helpers import string_to_date
 
 def season_scraper(season_url):
     """
@@ -29,23 +31,22 @@ def season_scraper(season_url):
     #creating the CV
     stats_cv = pd.DataFrame(columns = data_columns)
 
-    for boxscore_link in boxscore_links:
+    for boxscore_link in boxscore_links[:30]:
 
         boxscore = requests.get(boxscore_link)
         boxscore_soup = BeautifulSoup(boxscore.text, "html.parser")
 
         body = boxscore_soup.find("body")
 
-        #getting the date
-        title = body.find('h1')
-        split_title = title.text.split(",")
-        date = f"{split_title[1].strip()}, {split_title[2].strip()}"
-
         #getting the teams
         summary = body.find("div", {"class": "scorebox"})
         teams = summary.find_all("a", {"itemprop": "name"})
         team_one = teams_abbr[teams[0].text]
         team_two = teams_abbr[teams[1].text]
+
+        #getting the date
+        date_block = summary.find("div", {"class": "scorebox_meta"})
+        date = string_to_date(date_block.find("div").text)
 
         #getting the table data for both teams (note that this data is wrapped in a comment so extra steps need to be taken)
         table_sections = body.find_all("div", {"class": "table_wrapper"}, limit=2)
@@ -90,29 +91,77 @@ def season_scraper(season_url):
                     "Team": team_one if i == 0 else team_two,
                     "Player": name,
                     "Position": position,
-                    "AB": player[0],
-                    "R": player[1],
-                    "H": player[2],
-                    "RBI": player[3],
-                    "BB": player[4],
-                    "SO": player[5],
-                    "PA": player[6],
-                    "BA": player[7],
-                    "OBP": player[8],
-                    "SLG": player[9],
-                    "OPS": player[10],
-                    "WPA": player[13],
-                    "aLI": player[14],
-                    "WPA+": player[15],
-                    "WPA-": player[16][:-1],
-                    "RE24": player[19]
+                    "AB": player[0] or 0,
+                    "R": player[1] or 0,
+                    "H": player[2] or 0,
+                    "RBI": player[3] or 0,
+                    "BB": player[4] or 0,
+                    "SO": player[5] or 0,
+                    "PA": player[6] or 0,
+                    "BA": player[7] or 0,
+                    "OBP": player[8] or 0,
+                    "SLG": player[9] or 0,
+                    "OPS": player[10] or 0,
+                    "WPA": player[13] or 0,
+                    "aLI": player[14] or 0,
+                    "WPA+": player[15] or 0,
+                    "WPA-": player[16][:-1] or 0,
+                    "RE24": player[19] or 0
                 }
 
                 #update the cv with the new row
                 stats_cv = stats_cv.append(player_entry, ignore_index=True)
 
-    stats_cv.to_csv('Season.csv', line_terminator='\n', index=False)
+    # print(stats_cv)
+    # stats_cv.to_csv('Test.csv', line_terminator='\n', index=False)
+    return stats_cv
+
+
+def average_stats(data, games_back):
+    """
+    This function is passed in the dataframe computed from the previous function,
+    and also the number of games the user wants to compile stats from. This is to ensure
+    any one off games a player may have. For ex. if "games_back = 4", for each game, the stats from
+    the last 4 games the player has played in will be compiled and averaged, and then trained against
+    the OPS the player recorded for that game
+    """
+    cols = ["AB", "R", "H", "RBI", "BB", "SO", "PA", "BA", "OBP", "SLG", "OPS", "WPA", "aLI", "WPA+", "WPA-", "RE24"]
+
+    #creating dataframe with new cols
+    new_cols = [f"{stat}_{games_back}" for stat in cols]
+    new_df = pd.DataFrame(columns=new_cols)
+
+    #getting a list of unique players in the DF
+    players = np.array(data.Player.value_counts().index)
+
+    for player in players:
+        player_data = data[data.Player == player]
+        player_data = player_data.sort_values(by = "Date")
+        
+        for col in cols:
+            averages = []
+            for row in range(len(player_data)):
+                #Check if the row should be looked at 
+                if row < games_back:
+                    averages.append(0)
+                    continue
+                
+                average = player_data.iloc[row - games_back:row][f"{col}"].mean()
+                averages.append(average)
+            
+            player_data[f"{col}_{games_back}"] = averages
+
+        new_df = new_df.append(player_data, ignore_index=True)
+
+
+    #combining all existing columns 
+    new_df = new_df[[i for i in new_df.columns.to_list() if i not in new_cols] + [i for i in new_df.columns.to_list() if i in new_cols]]    
+    new_df.sort_values(by = ['Player', 'Date'], inplace=True)
+    new_df.to_csv('Test.csv', line_terminator='\n', index=False)   
+
+
 
 
 #ex input from 2019 season
-season_scraper("https://www.baseball-reference.com/leagues/majors/2019-schedule.shtml")
+cheese = season_scraper("https://www.baseball-reference.com/leagues/majors/2019-schedule.shtml")
+average_stats(cheese, 1)
