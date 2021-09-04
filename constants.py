@@ -13,6 +13,7 @@ teams_abbr = {
     "Houston Astros": "HOU",
     "Kansas City Royals": "KAN",
     "Los Angeles Angels": "LAA",
+    "Los Angeles Angels of Anaheim": "LAA",
     "Los Angeles Dodgers": "LAD",
     "Milwaukee Brewers": "MIL",
     "Minnesota Twins": "MIN",
