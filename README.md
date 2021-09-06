@@ -10,9 +10,9 @@ Let me know of any issues or suggestions you have!
 
 # Inspiration
 
-For the last year or so I've been messing around with fantasy sports, in particular, fantasy baseball. There's just been one problem. <br>
-_I suck at it_
-<br>
+For the last year or so I've been messing around with fantasy sports, in particular, fantasy baseball. There's just been one problem. <br><br>
+**_I suck at it._**
+<br><br>
 No matter how hard I've tried, I can't seem to pinpoint which players are hot and which players aren't. I typically don't have much time to spend researching in depth stats for every player in the MLB every day, so I decided to train a model that would do the work for me.
 
 # What does it accomplish?
