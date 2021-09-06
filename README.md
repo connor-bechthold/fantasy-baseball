@@ -3,7 +3,7 @@
 # Setup
 
 - Clone the repo
-- Run `pip install -r requirements.txt`
+- Run `pip3 install -r requirements.txt`
 - Run the main script, `python3 main.py`
 
 Let me know of any issues or suggestions you have!
