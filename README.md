@@ -46,15 +46,15 @@ Note that these stats were measured on a **per game** basis
 
 The program essentially consists of a Python script that runs daily and does different tasks depending on the data the user has collected by previously running the script before.
 
-I decided to scrape data from [Baseball Reference](https://www.baseball-reference.com), which conveniently holds every MLB game's stats from the 1900's. For starters, I used BeatifulSoup to scrape every game over the past three seasons (just over 100000 data points), which was sufficient for what I wanted to do. The data was filtered, cleansed, and organized into two dataframes using Pandas and NumPy. One dataframe housed the basic game stats for every game played, and the other housed the previous 2 day averages for each game, sorted alphabetically by player.
+I decided to scrape data from [Baseball Reference](https://www.baseball-reference.com), which conveniently holds every MLB game's stats from the 1900's. For starters, I used BeatifulSoup to scrape every game over the past three seasons (just over 100,000 data points), which was sufficient for what I wanted to do. The data was filtered, cleansed, and organized into two dataframes using Pandas and NumPy. One dataframe housed the basic game stats for every game played, and the other housed the previous 2 day averages for each game, sorted alphabetically by player.
 
 After this data was compiled, I trained the model (using Scikit Learn) with the inputs being the 2 day averages, and the output being the OPS the player accumulated for that game. A linear regression algorithm was used, which gave these results:
 
 ![linear regression graph for OPS predicitons vs. results](assets/plot.png)
 
-Using the built in score tool (and my own observations), the model tends to have an accuracy between **65 - 70 percent**, depending on the input data.
+Using the built in score tool (and my own observations), the model tends to have an accuracy around ** 75 percent**, depending on the input data.
 
-After the model is created, the script then collects averages from the most recent 2 games each MLB player has played, runs it through the model, and the results are ranked and outputted into a tect file, like so:
+After the model is created, the script then collects averages from the most recent 2 games each MLB player has played, runs it through the model, and the results are ranked and outputted into a text file, like so:
 
 ![text file with OPS rankings](assets/sample_output.png)
 
