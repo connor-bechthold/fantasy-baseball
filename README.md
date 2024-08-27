@@ -52,7 +52,7 @@ After this data was compiled, I trained the model (using Scikit Learn) with the 
 
 ![linear regression graph for OPS predicitons vs. results](assets/plot.png)
 
-Using the built in score tool (and my own observations), the model tends to have an accuracy around ** 75 percent**, depending on the input data.
+Using the built in score tool (and my own observations), the model tends to have an accuracy around **75 percent**, depending on the input data.
 
 After the model is created, the script then collects averages from the most recent 2 games each MLB player has played, runs it through the model, and the results are ranked and outputted into a text file, like so:
 
